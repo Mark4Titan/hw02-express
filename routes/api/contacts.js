@@ -1,25 +1,16 @@
 const express = require("express");
-const Joi = require("joi");
+const {
+  contactsSchema,
+  contactsChangeSchema,
+  favoriteSchema, 
+} = require("../../models/validator");
+
 
 const { Contact } = require("../../models/contacts.model");
 
 const router = express.Router();
 
-const contactsSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string(),
-  phone: Joi.string().required(),
-  favorite: Joi.boolean(),
-});
-const contactsChangeSchema = Joi.object({
-  name: Joi.string(),
-  email: Joi.string(),
-  phone: Joi.string(),
-  favorite: Joi.boolean(),
-});
-const favoriteSchema = Joi.object({
-  favorite: Joi.boolean().required(),
-});
+
 
 router.get("/", async (req, res, next) => {
   try {
@@ -80,10 +71,6 @@ router.put("/:contactId", async (req, res, next) => {
 
 router.patch("/:contactId/favorite", async (req, res, next) => {
   try {
-    const favorite =
-      typeof req.body.favorite === "boolean" ? req.body.favorite : null;
-
-    req.body = { favorite };
     const { error } = favoriteSchema.validate(req.body);
     if (error)
       return res.status(400).json({ message: "missing field favorite" });
