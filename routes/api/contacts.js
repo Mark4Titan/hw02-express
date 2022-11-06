@@ -2,7 +2,7 @@ const express = require("express");
 const {
   contactsSchema,
   contactsChangeSchema,
-  favoriteSchema, 
+  favoriteSchema,
 } = require("../../models/validator");
 
 
@@ -22,10 +22,11 @@ router.get("/", async (req, res, next) => {
 });
 
 router.get("/:contactId", async (req, res, next) => {
-  try {
+  try {    
     const result = await Contact.findById(req.params.contactId);
     if (!result) return res.status(404).json({ message: "Not found" });
     return res.status(200).json(result);
+
   } catch (error) {
     next(error);
   }
