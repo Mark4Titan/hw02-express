@@ -5,6 +5,7 @@ const contactSchema = Schema(
     name: {
       type: String,
       required: [true, "Set name for contact"],
+      minLength: 2,
     },
     email: {
       type: String,
@@ -12,6 +13,7 @@ const contactSchema = Schema(
     phone: {
       type: String,
       required: true,
+      minLength: 3,
     },
     favorite: {
       type: Boolean,
