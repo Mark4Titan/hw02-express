@@ -1,9 +1,13 @@
-function tryCatchWrapper(endpointFn) {
+function tryCatchWrapper(endpointFn, errorNot = []) {
   return async (req, res, next) => {
     try {
       await endpointFn(req, res, next);
     } catch (err) {
-      next(err);
+      const result = errorNot.find((item) => item.name === err.name);
+
+      if (result)
+        return res.status(result.status).json({ message: result.message });
+      else next(err);
     }
   };
 }

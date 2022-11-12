@@ -4,12 +4,21 @@ const { tryCatchWrapper } = require("./helpers");
 
 const contactsRouter = express.Router();
 
-contactsRouter.get("/", tryCatchWrapper(contactController.getAll));
-contactsRouter.get("/:id", tryCatchWrapper(contactController.findOneById));
-contactsRouter.post("/", tryCatchWrapper(contactController.create));
-contactsRouter.delete("/:id", tryCatchWrapper(contactController.deleteById));
-contactsRouter.put("/:id", tryCatchWrapper(contactController.updateById));
-contactsRouter.patch("/:id/favorite", tryCatchWrapper(contactController.favoriteUpdate)
+const errorNot = [
+  {
+    name: "CastError",
+    status: 400,
+    message: "incorrect request",
+  },
+];
+
+
+contactsRouter.get("/", tryCatchWrapper(contactController.getAll, errorNot));
+contactsRouter.get("/:id", tryCatchWrapper(contactController.findOneById, errorNot));
+contactsRouter.post("/", tryCatchWrapper(contactController.create, errorNot));
+contactsRouter.delete("/:id", tryCatchWrapper(contactController.deleteById, errorNot));
+contactsRouter.put("/:id", tryCatchWrapper(contactController.updateById, errorNot));
+contactsRouter.patch("/:id/favorite", tryCatchWrapper(contactController.favoriteUpdate, errorNot)
 );
 
 

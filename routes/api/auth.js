@@ -1,26 +1,15 @@
-const express = require("express");
-// const {
-//   usersSchema,
-// } = require("../../models/validator");
-
-
 const { User } = require("../../models/users.model");
+const { authSchema } = require("../../models/validator");
+const { createError } = require("../helpers");
 
-const router = express.Router();
+async function register(req, res, next) {
+  const { error } = authSchema.validate(req.body);
+  if (error) return next(createError(400, "the request data is not correct"));
+  const { email, password } = req.body;
+  const user = new User({ email, password });
+  await user.save();
 
+  return res.status(201).json(user);
+}
 
-
-router.POST("/users/register", async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    const user = new User({ email, password });
-    await user.save();
-
-    // return res.status(201).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
-
-
-module.exports = router;
+module.exports = { register };
