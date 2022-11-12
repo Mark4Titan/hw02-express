@@ -3,7 +3,9 @@ function tryCatchWrapper(endpointFn, errorNot = []) {
     try {
       await endpointFn(req, res, next);
     } catch (err) {
-      const result = errorNot.find((item) => item.name === err.name);
+      const [result] = errorNot.filter(
+        (item) => err.message.includes(item.messIn) && item
+      );
 
       if (result)
         return res.status(result.status).json({ message: result.message });

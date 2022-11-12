@@ -6,7 +6,7 @@ const contactsRouter = express.Router();
 
 const errorNot = [
   {
-    name: "CastError",
+    messIn: "Cast to ObjectId failed",
     status: 400,
     message: "incorrect request",
   },

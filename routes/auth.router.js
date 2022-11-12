@@ -6,7 +6,7 @@ const authRouter = express.Router();
 
 const errorNot = [
   {
-    name: "MongoServerError",
+    messIn: "duplicate key error collection",
     status: 409,
     message: "such a user exists",
   },
