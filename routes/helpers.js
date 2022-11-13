@@ -1,9 +1,10 @@
-function tryCatchWrapper(endpointFn, errorNot = []) {
+function tryCatchWrapper(endpointFn, errorNotebook = []) {
   return async (req, res, next) => {
     try {
       await endpointFn(req, res, next);
     } catch (err) {
-      const [result] = errorNot.filter(
+      
+      const [result] = errorNotebook.filter(
         (item) => err.message.includes(item.messIn) && item
       );
 
@@ -14,13 +15,7 @@ function tryCatchWrapper(endpointFn, errorNot = []) {
   };
 }
 
-function createError(sta = 404, er = "Not Found") {
-  const err = new Error(er);
-  err.status = sta;
-  return err;
-}
 
 module.exports = {
   tryCatchWrapper,
-  createError,
 };

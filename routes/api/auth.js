@@ -1,17 +1,18 @@
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
 const { User } = require("../../models/users.model");
 const { authSchema } = require("../../models/validator");
-const { createError } = require("../helpers");
+const jwt = require("jsonwebtoken");
 
+const {JWT_SECRET} = process.env
 
 async function register(req, res, next) {
   const { error } = authSchema.validate(req.body);
-  if (error) return next(createError(400, "the request data is not correct"));
+  if (error) throw new Error("!length");
 
   const { email, password } = req.body;
   const salt = await bcrypt.genSalt();
   const hashPassword = await bcrypt.hash(password, salt);
-  
+
   const user = new User({ email, password: hashPassword });
   await user.save();
 
@@ -20,4 +21,18 @@ async function register(req, res, next) {
     .json({ user: { email, subscription: user.subscription } });
 }
 
-module.exports = { register };
+async function login(req, res, next) {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) throw new Error("!email");
+  const passwordDidNotMatch = await bcrypt.compare(password, user.password);
+  if (!passwordDidNotMatch) throw new Error("!pasword");
+
+  const token = jwt.sign({ _id: user._id }, JWT_SECRET,  { expiresIn: "15m", });
+  return res.status(200).json(token);
+}
+
+module.exports = {
+  register,
+  login,
+};
