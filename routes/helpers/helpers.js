@@ -11,10 +11,11 @@ function tryCatchWrapper(endpointFn, errorNotebook = []) {
       if (result)
         return res.status(result.status).json({ message: result.message });
       else next(err);
+
+      return new Error(err);
     }
   };
 }
-
 
 module.exports = {
   tryCatchWrapper,

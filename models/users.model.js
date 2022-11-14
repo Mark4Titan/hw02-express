@@ -1,4 +1,4 @@
-const { Schema, model, SchemaTypes } = require("mongoose");
+const { Schema, model } = require("mongoose");
 
 const userSchema = Schema(
   {
@@ -17,10 +17,6 @@ const userSchema = Schema(
       default: "starter",
     },
     token: String,
-    owner: {
-      type: SchemaTypes.ObjectId,
-      ref: "user",
-    },
   },
   { timestamps: true, versionKey: false }
 );

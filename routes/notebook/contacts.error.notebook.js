@@ -10,7 +10,7 @@ const errorNotebook = [
     message: "Not Found",
   },
   {
-    messIn: "missing",
+    messIn: "!missing",
     status: 404,
     message: "missing fields",
   },

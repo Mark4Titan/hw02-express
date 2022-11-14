@@ -12,12 +12,17 @@ const errorNotebook = [
   {
     messIn: "!pasword",
     status: 401,
-    message: "wrong pasword",
+    message: "Email or password is wrong",
   },
   {
     messIn: "!length",
     status: 400,
     message: "the request data is not correct",
+  },
+  {
+    messIn: "!token",
+    status: 401,
+    message: "failed to add token",
   },
 ];
 
