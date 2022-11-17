@@ -1,5 +1,5 @@
-const paramsContact = async (req) => {
-  const result = await {
+const paramsContact = (req) => {
+  const result = {
     _id: req.params.id,
     body: req.body,
     owner: req.user._id,

@@ -8,7 +8,7 @@ const { JWT_SECRET } = process.env;
 
 async function register(req, res) {
   const { error } = authSchema.validate(req.body);
-  if (error) throw new Error("!length");
+  if (error) throw new Error("!found");
 
   const { email, password } = req.body;
   const salt = await bcrypt.genSalt();
@@ -28,10 +28,10 @@ async function register(req, res) {
 
 async function login(req, res) {   
   const { error } = authSchema.validate(req.body);
-  if (error) throw new Error("!length");
+  if (error) throw new Error("!found");
   const { email, password } = req.body; 
   const user = await User.findOne({ email });
-  if (!user) throw new Error("!email");
+  if (!user) throw new Error("!found");
   const passwordDidNotMatch = await bcrypt.compare(password, user.password);
   if (!passwordDidNotMatch) throw new Error("!pasword");
   const result = await updateTokenUser(user._id);
@@ -47,7 +47,6 @@ async function login(req, res) {
 
 async function logout(req, res, next) {
   const { owner } = await paramsContact(req);
-
   const result = await User.findByIdAndUpdate(
     { _id: owner },
     { token: null },
