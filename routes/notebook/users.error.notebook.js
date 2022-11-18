@@ -7,7 +7,7 @@ const errorNotebook = [
   {
     messIn: "!duplicate",
     status: 409,
-    message: "such a user exists",
+    message: "Email in use",
   },
   {
     messIn: "!pasword",

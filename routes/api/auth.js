@@ -78,14 +78,12 @@ const updateTokenUser = async (_id) => {
 const mailSearch = async (email) => {
   try {
     const [userError] = await User.find({ email });
-    console.log("userError.email", userError.email);
     if (userError.email) throw new Error("!duplicate");
-    return userError;
   } catch (error) {
     if (
       error.message !== "Cannot read properties of undefined (reading 'email')"
     )
-      throw new Error("!duplicate");
+    throw error;
   }
 };
 
