@@ -5,6 +5,11 @@ const errorNotebook = [
     message: "such a user exists",
   },
   {
+    messIn: "!duplicate",
+    status: 409,
+    message: "such a user exists",
+  },
+  {
     messIn: "!pasword",
     status: 401,
     message: "Email or password is wrong",

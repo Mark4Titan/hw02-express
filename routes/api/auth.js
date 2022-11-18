@@ -9,8 +9,9 @@ const { JWT_SECRET } = process.env;
 async function register(req, res) {
   const { error } = authSchema.validate(req.body);
   if (error) throw new Error("!found");
-
+  
   const { email, password } = req.body;
+  await mailSearch(email);
   const salt = await bcrypt.genSalt();
   const hashPassword = await bcrypt.hash(password, salt);
   const user = new User({ email, password: hashPassword });
@@ -72,6 +73,20 @@ const updateTokenUser = async (_id) => {
   const result = await User.findByIdAndUpdate(_id, { token }, { new: true });
   if (!result) throw new Error("!token");
   return result;
+};
+
+const mailSearch = async (email) => {
+  try {
+    const [userError] = await User.find({ email });
+    console.log("userError.email", userError.email);
+    if (userError.email) throw new Error("!duplicate");
+    return userError;
+  } catch (error) {
+    if (
+      error.message !== "Cannot read properties of undefined (reading 'email')"
+    )
+      throw new Error("!duplicate");
+  }
 };
 
 module.exports = {

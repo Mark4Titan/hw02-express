@@ -18,7 +18,10 @@ const userSchema = Schema(
     },
     token: String,
   },
-  { timestamps: true, versionKey: false }
+  {
+    timestamps: true,
+    versionKey: false,
+  }
 );
 
 const User = model("users", userSchema);
