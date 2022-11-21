@@ -1,10 +1,11 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, SchemaTypes } = require("mongoose");
 
 const contactSchema = Schema(
   {
     name: {
       type: String,
       required: [true, "Set name for contact"],
+      minLength: 2,
     },
     email: {
       type: String,
@@ -12,10 +13,15 @@ const contactSchema = Schema(
     phone: {
       type: String,
       required: true,
+      minLength: 3,
     },
     favorite: {
       type: Boolean,
       default: false,
+    },
+    owner: {
+      type: SchemaTypes.ObjectId,
+      ref: "user",
     },
   },
   { timestamps: true, versionKey: false }
