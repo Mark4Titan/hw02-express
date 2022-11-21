@@ -1,93 +1,85 @@
-const express = require("express");
 const {
   contactsSchema,
   contactsChangeSchema,
   favoriteSchema,
 } = require("../../models/validator");
 
-
 const { Contact } = require("../../models/contacts.model");
+const { paramsContact } = require("../helpers/params");
 
-const router = express.Router();
+async function getAll(req, res) {
+  const { owner } = await paramsContact(req);
+  const result = await Contact.find({ owner });
 
+  return res.status(200).json(result);
+}
 
+async function findOneById(req, res) {
+  const { _id, owner } = await paramsContact(req);
+  const result = await validatorDB(_id, owner);
 
-router.get("/", async (req, res, next) => {
-  try {
-    const result = await Contact.find();
-    return res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+  return res.status(200).json(result);
+}
 
-router.get("/:contactId", async (req, res, next) => {
-  try {    
-    const result = await Contact.findById(req.params.contactId);
-    if (!result) return res.status(404).json({ message: "Not found" });
-    return res.status(200).json(result);
+async function create(req, res) {
+  const { body, owner } = await paramsContact(req);
 
-  } catch (error) {
-    next(error);
-  }
-});
+  const { error } = contactsSchema.validate(body);
+  if (error) throw new Error("!validation");
+  body.owner = owner;
+  const result = await Contact.create(body);
 
-router.post("/", async (req, res, next) => {
-  try {
-    const { error } = contactsSchema.validate(req.body);
-    if (error)
-      return res.status(400).json({ message: "missing required name field" });
+  return res.status(201).json(result);
+}
 
-    const result = await Contact.create(req.body);
-    return res.status(201).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+async function deleteById(req, res) {
+  const { _id, owner } = await paramsContact(req);
 
-router.delete("/:contactId", async (req, res, next) => {
-  try {
-    const result = await Contact.findByIdAndDelete(req.params.contactId);
-    if (!result) return res.status(404).json({ message: "not found" });
+  await validatorDB(_id, owner);
+  const result = await Contact.findByIdAndDelete(_id);
+  if (!result) throw new Error("!found");
 
-    return res.status(200).json({ message: "contact deleted" });
-  } catch (error) {
-    next(error);
-  }
-});
+  return res.status(200).json({ message: "contact deleted" });
+}
 
-router.put("/:contactId", async (req, res, next) => {
-  try {
-    const { error } = contactsChangeSchema.validate(req.body);
-    if (error) return res.status(404).json({ message: "missing fields" });
-    const result = await updateStatusContact(req.params.contactId, req.body);
-    
-    if (!result) return res.status(404).json({ message: "not found" });
+async function updateById(req, res) {
+  const { _id, body, owner } = await paramsContact(req);
+  
+  const { error } = contactsChangeSchema.validate(body);
+  if (error) throw new Error("!missing");
+  await validatorDB(_id, owner);
+  const result = await updateStatusContact(_id, body);
 
-    return res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+  return res.status(200).json(result);
+}
 
-router.patch("/:contactId/favorite", async (req, res, next) => {
-  try {
-    const { error } = favoriteSchema.validate(req.body);
-    if (error)
-      return res.status(400).json({ message: "missing field favorite" });
-    
-    const result = await updateStatusContact(req.params.contactId, req.body);
+async function favoriteUpdate(req, res) {
+  const { _id, body, owner } = await paramsContact(req);
 
-    if (!result) return res.status(404).json({ message: "not found" });
+  const { error } = favoriteSchema.validate(body);
+  if (error) throw new Error("!favorite");
+  await validatorDB(_id, owner);
+  const result = await updateStatusContact(_id, body);
 
-    return res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+  return res.status(200).json(result);
+}
 
-const updateStatusContact = async (contactId, body) => {
-  return await Contact.findByIdAndUpdate(contactId, body, { new: true });
+//
+const updateStatusContact = async (_id, body) => {
+  return await Contact.findByIdAndUpdate(_id, body, { new: true });
 };
 
-module.exports = router;
+const validatorDB = async (_id, owner) => {
+  const [result] = await Contact.find({ _id, owner });
+  if (!result) throw new Error("!found");
+  return result;
+};
+
+module.exports = {
+  getAll,
+  findOneById,
+  create,
+  deleteById,
+  updateById,
+  favoriteUpdate,
+};
