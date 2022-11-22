@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
 const { User } = require("../../models/users.model");
 const { authSchema } = require("../../models/validator");
 const { paramsContact } = require("../helpers/params");
@@ -12,9 +13,11 @@ async function register(req, res) {
   
   const { email, password } = req.body;
   await mailSearch(email);
+  const avatarURL = gravatar.url(email);
   const salt = await bcrypt.genSalt();
   const hashPassword = await bcrypt.hash(password, salt);
-  const user = new User({ email, password: hashPassword });
+  const user = new User({ email, password: hashPassword, avatarURL });
+
   await user.save();
   const result = await updateTokenUser(user._id);
 
@@ -22,6 +25,8 @@ async function register(req, res) {
     token: result.token,
     user: {
       email: result.email,
+      avatarURL: result.avatarURL,
+
       subscription: result.subscription,
     },
   });
@@ -69,7 +74,8 @@ async function current(req, res) {
 
 //
 const updateTokenUser = async (_id) => {
-  const token = await jwt.sign({ _id }, JWT_SECRET, { expiresIn: "15m" });
+  const token = await jwt.sign({ _id }, JWT_SECRET, { expiresIn: "30m" });
+
   const result = await User.findByIdAndUpdate(_id, { token }, { new: true });
   if (!result) throw new Error("!token");
   return result;

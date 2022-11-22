@@ -5,6 +5,11 @@ const checkErrorNotebook = [
     message: "the token has expired",
   },
   {
+    messIn: "jwt malformed",
+    status: 401,
+    message: "Not authorized",
+  },
+  {
     messIn: "invalid signature",
     status: 401,
     message: "not a valid token",

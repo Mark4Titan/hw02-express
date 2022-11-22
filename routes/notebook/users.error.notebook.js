@@ -24,6 +24,12 @@ const errorNotebook = [
     status: 404,
     message: "Not Found",
   },
+  {
+    messIn: "!avatarURL",
+    status: 400,
+    message: "Bad Request",
+  },
+
 ];
 
 module.exports = {
