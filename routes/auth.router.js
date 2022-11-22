@@ -7,6 +7,7 @@ const { checkErrorNotebook } = require("./notebook/check.error.notebook");
 const imageOperator = require("./middelewares/image.operator");
 const publicController = require("./api/public");
 
+
 const authRouter = express.Router();
 
 authRouter.post(
@@ -14,6 +15,7 @@ authRouter.post(
   tryCatchWrapper(authController.register, errorNotebook)
 );
 authRouter.post("/login", tryCatchWrapper(authController.login, errorNotebook));
+
 authRouter.get(
   "/current",
   tryCatchWrapper(check, checkErrorNotebook),
@@ -31,6 +33,7 @@ authRouter.patch(
   tryCatchWrapper(imageOperator.imageJimp, errorNotebook),
   tryCatchWrapper(publicController.avatars, errorNotebook)
 );
+
 
 module.exports = {
   authRouter,

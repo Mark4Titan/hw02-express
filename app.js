@@ -6,6 +6,7 @@ const app = express();
 const { contactsRouter } = require("./routes/contacts.router");
 const { authRouter } = require("./routes/auth.router");
 
+
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
 app.use(logger(formatsLogger));
@@ -18,6 +19,7 @@ app.get("/favicon.ico", function (req, res) {
   res.end();
 });
 
+
 app.use("/api/users", authRouter);
 app.use("/api/contacts", contactsRouter);
 
@@ -25,6 +27,7 @@ app.use("/", (req, res, next) => {
   res.status(404).json({
     message: "Not found",
   });
+
 });
 
 app.use((err, req, res, next) => {

@@ -27,4 +27,5 @@ const paramsUser= (req) => {
 module.exports = {
   paramsContact,
   paramsUser,
+
 };

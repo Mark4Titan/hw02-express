@@ -29,6 +29,7 @@ const errorNotebook = [
     status: 400,
     message: "Bad Request",
   },
+
 ];
 
 module.exports = {

@@ -20,6 +20,7 @@ const userSchema = Schema(
     token: String,
   },
 
+
   {
     timestamps: true,
     versionKey: false,
