@@ -12,7 +12,7 @@ async function avatars(req, res) {
   if (!result) throw new Error("!avatarURL");
 
   return res.status(200).json({
-    avatarURL: `localhost:${process.env.PORT}/public/avatars/${result.avatarURL}`,
+    avatarURL: `/public/avatars/${result.avatarURL}`,
   });
 }
 
