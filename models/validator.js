@@ -23,6 +23,10 @@ const authSchema = Joi.object({
   password: Joi.string().min(6).required(),
 });
 
+const emailSchema = Joi.object({
+  email: Joi.string().min(6).required(),
+});
+
 
 
 module.exports = {
@@ -30,4 +34,5 @@ module.exports = {
   contactsChangeSchema,
   favoriteSchema,
   authSchema,
+  emailSchema,
 };
