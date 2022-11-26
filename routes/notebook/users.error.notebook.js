@@ -29,7 +29,36 @@ const errorNotebook = [
     status: 400,
     message: "Bad Request",
   },
-
+  {
+    messIn: "!email",
+    status: 400,
+    message: "missing required field email",
+  },
+  {
+    messIn: "!usFound",
+    status: 404,
+    message: "User not found",
+  },
+  {
+    messIn: "Cannot read properties of undefined",
+    status: 400,
+    message: "Bad Request",
+  },
+  {
+    messIn: "!verificationToken",
+    status: 400,
+    message: "Bad Request",
+  },
+  {
+    messIn: "!verify",
+    status: 400,
+    message: "Verification has already been passed",
+  },
+  {
+    messIn: "!notVerify",
+    status: 400,
+    message: "The mail has not yet been verified",
+  },
 ];
 
 module.exports = {

@@ -2,29 +2,34 @@ const express = require("express");
 const authController = require("./api/auth");
 const { tryCatchWrapper } = require("./helpers/helpers");
 const { errorNotebook } = require("./notebook/users.error.notebook");
-const { check } = require("../routes/middelewares/authorization.check");
+const { check } = require("./middelewares/authorization.check");
+const authVerify = require("./middelewares/authVerify");
 const { checkErrorNotebook } = require("./notebook/check.error.notebook");
 const imageOperator = require("./middelewares/image.operator");
 const publicController = require("./api/public");
-
 
 const authRouter = express.Router();
 
 authRouter.post(
   "/register",
-  tryCatchWrapper(authController.register, errorNotebook)
+  tryCatchWrapper(authController.register, errorNotebook),
 );
-authRouter.post("/login", tryCatchWrapper(authController.login, errorNotebook));
+authRouter.post(
+  "/verify",
+  tryCatchWrapper(authVerify.reVerificationRequest, errorNotebook)
+);
+authRouter.get(
+  "/verify/:verificationToken",
+  tryCatchWrapper(authVerify.verifEymail, errorNotebook)
+);
+authRouter.post(
+  "/login",
+  tryCatchWrapper(authController.login, errorNotebook));
 
 authRouter.get(
   "/current",
   tryCatchWrapper(check, checkErrorNotebook),
   tryCatchWrapper(authController.current, errorNotebook)
-);
-authRouter.post(
-  "/logout",
-  tryCatchWrapper(check, checkErrorNotebook),
-  tryCatchWrapper(authController.logout, errorNotebook)
 );
 authRouter.patch(
   "/avatars",
@@ -33,7 +38,11 @@ authRouter.patch(
   tryCatchWrapper(imageOperator.imageJimp, errorNotebook),
   tryCatchWrapper(publicController.avatars, errorNotebook)
 );
-
+authRouter.post(
+  "/logout",
+  tryCatchWrapper(check, checkErrorNotebook),
+  tryCatchWrapper(authController.logout, errorNotebook)
+);
 
 module.exports = {
   authRouter,

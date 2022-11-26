@@ -1,43 +1,52 @@
 const bcrypt = require("bcrypt");
+const { v4: uuidv4 } = require("uuid");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const { User } = require("../../models/users.model");
 const { authSchema } = require("../../models/validator");
 const { paramsContact } = require("../helpers/params");
+const { mailSend } = require("../middelewares/mailSend");
 
 const { JWT_SECRET } = process.env;
 
 async function register(req, res) {
   const { error } = authSchema.validate(req.body);
   if (error) throw new Error("!found");
-  
   const { email, password } = req.body;
+
   await mailSearch(email);
+
   const avatarURL = gravatar.url(email);
   const salt = await bcrypt.genSalt();
+  const verificationToken = uuidv4();
   const hashPassword = await bcrypt.hash(password, salt);
-  const user = new User({ email, password: hashPassword, avatarURL });
+  const user = new User({
+    email,
+    password: hashPassword,
+    avatarURL,
+    verificationToken,
+  });
 
   await user.save();
-  const result = await updateTokenUser(user._id);
+  mailSend(email, verificationToken);
 
   return res.status(201).json({
-    token: result.token,
     user: {
-      email: result.email,
-      avatarURL: result.avatarURL,
-
-      subscription: result.subscription,
+      email,
+      avatarURL,
+      verificationToken,
+      subscription: user.subscription,
     },
   });
 }
 
-async function login(req, res) {   
+async function login(req, res) {
   const { error } = authSchema.validate(req.body);
   if (error) throw new Error("!found");
-  const { email, password } = req.body; 
+  const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) throw new Error("!found");
+  if (!user.verify) throw new Error("!notVerify");
   const passwordDidNotMatch = await bcrypt.compare(password, user.password);
   if (!passwordDidNotMatch) throw new Error("!pasword");
   const result = await updateTokenUser(user._id);
@@ -83,14 +92,15 @@ const updateTokenUser = async (_id) => {
 
 const mailSearch = async (email) => {
   try {
-    const [userError] = await User.find({ email });
-    if (userError.email) throw new Error("!duplicate");
+    const result = await User.findOne({ email });
+    if (result) throw new Error("!duplicate");
   } catch (error) {
     if (
       error.message !== "Cannot read properties of undefined (reading 'email')"
     )
-    throw error;
+      throw error;
   }
+  return true;
 };
 
 module.exports = {
