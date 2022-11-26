@@ -9,12 +9,13 @@ const { mailSend } = require("../middelewares/mailSend");
 
 const { JWT_SECRET } = process.env;
 
-async function register(req, res, next) {
+async function register(req, res) {
   const { error } = authSchema.validate(req.body);
   if (error) throw new Error("!found");
-
   const { email, password } = req.body;
+
   await mailSearch(email);
+
   const avatarURL = gravatar.url(email);
   const salt = await bcrypt.genSalt();
   const verificationToken = uuidv4();
@@ -39,14 +40,13 @@ async function register(req, res, next) {
   });
 }
 
-async function login(req, res) {  
+async function login(req, res) {
   const { error } = authSchema.validate(req.body);
   if (error) throw new Error("!found");
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) throw new Error("!found");
-  console.log("user.verify", user.verify);
-  if (!user.verify) throw new Error("!verify");
+  if (!user.verify) throw new Error("!notVerify");
   const passwordDidNotMatch = await bcrypt.compare(password, user.password);
   if (!passwordDidNotMatch) throw new Error("!pasword");
   const result = await updateTokenUser(user._id);
@@ -92,14 +92,15 @@ const updateTokenUser = async (_id) => {
 
 const mailSearch = async (email) => {
   try {
-    const [userError] = await User.find({ email });
-    if (userError.email) throw new Error("!duplicate");
+    const result = await User.findOne({ email });
+    if (result) throw new Error("!duplicate");
   } catch (error) {
     if (
       error.message !== "Cannot read properties of undefined (reading 'email')"
     )
       throw error;
   }
+  return true;
 };
 
 module.exports = {

@@ -9,7 +9,7 @@ async function verifEymail(req, res) {
   if (!user) throw new Error("!usFound");
   if (!user.verificationToken) throw new Error("!verificationToken");
   if (user.verify)
-    return res.status(201).json(`mail: ${user.email} already verified!`);
+    return res.status(201).json({ message: `mail: ${user.email} already verified!` });
 
   const result = await User.findByIdAndUpdate(
     { _id: user._id },
@@ -18,7 +18,7 @@ async function verifEymail(req, res) {
   );
   if (!result) throw new Error("!verificationToken");
 
-  return res.status(200).json("Verification successful");
+  return res.status(200).json({ message: "Verification successful" });
 }
 
 async function reVerificationRequest(req, res) {
@@ -32,7 +32,7 @@ async function reVerificationRequest(req, res) {
 
   mailSend(email, user.verificationToken);
 
-  return res.status(200).json("Verification email sent");
+  return res.status(200).json({message: "Verification email sent"});
 }
 
 module.exports = {

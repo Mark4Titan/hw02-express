@@ -54,6 +54,11 @@ const errorNotebook = [
     status: 400,
     message: "Verification has already been passed",
   },
+  {
+    messIn: "!notVerify",
+    status: 400,
+    message: "The mail has not yet been verified",
+  },
 ];
 
 module.exports = {
